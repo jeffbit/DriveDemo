@@ -38,7 +38,9 @@ data class RideUiModel(
     val estimated_earnings_cents: String,
     val ordered_waypoints: List<OrderedWaypointUiModel>,
     val trip_id: String,
-    val inSeries: Boolean
+    val inSeries: Boolean,
+    val estimatedRideMiles: Double,
+    val estimatedRideMin: Int
 )
 
 
@@ -91,7 +93,9 @@ data class OrderedWaypointUiModel(
     val location: LocationUiModel,
     val passengers: Int,
     val booster_seats: Int,
-    val anchor: Boolean
+    val anchor: Boolean,
+    val lat: Double,
+    val lon: Double
 )
 
 data class LocationUiModel(
@@ -105,7 +109,10 @@ private fun Ride.toRideUiModel() = RideUiModel(
     estimated_earnings_cents = formatEarnings(estimated_earnings_cents.toDouble()),
     ordered_waypoints = ordered_waypoints.map { it.toOrderedWayPointUiModel() },
     trip_id = trip_id.toString(),
-    inSeries = in_series
+    inSeries = in_series,
+    estimatedRideMiles = estimated_ride_miles,
+    estimatedRideMin = estimated_ride_minutes,
+
 )
 
 private fun formatEarnings(earnings: Double): String {
@@ -117,8 +124,11 @@ private fun OrderedWaypoint.toOrderedWayPointUiModel() = OrderedWaypointUiModel(
     location = locationEntity.toLocationUiModel(),
     passengers = passengers.size,
     booster_seats = countBoosterSeats(passengers = passengers),
-    anchor = anchor
-)
+    anchor = anchor,
+    lat = locationEntity.lat,
+    lon = locationEntity.lng,
+
+    )
 
 
 private fun countBoosterSeats(passengers: List<Passenger>): Int {

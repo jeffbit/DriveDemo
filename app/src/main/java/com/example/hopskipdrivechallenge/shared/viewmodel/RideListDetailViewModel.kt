@@ -1,22 +1,24 @@
-package com.example.hopskipdrivechallenge.feature.rideList.viewmodel
+package com.example.hopskipdrivechallenge.shared.viewmodel
 
-import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hopskipdrivechallenge.data.repository.RidesRepository
+import com.example.hopskipdrivechallenge.feature.rideList.model.RideUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.RidesByDateUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.RidesUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRideDateUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRidesUiModel
+import com.example.hopskipdrivechallenge.feature.ridedetail.model.RideDetailUiModel
+import com.example.hopskipdrivechallenge.feature.ridedetail.model.toRideDetailUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @HiltViewModel
-class RideListViewModel @Inject constructor(
+class RideListDetailViewModel @Inject constructor(
     private val ridesRepository: RidesRepository
 ) : ViewModel() {
 
@@ -26,14 +28,14 @@ class RideListViewModel @Inject constructor(
     val rideListViewState: LiveData<RideListViewState> = mutableRideListViewState
 
 
-    private val mutableRideDetailViewState : MutableLiveData<RideDetailViewState> =
+    private val mutableRideDetailViewState: MutableLiveData<RideDetailViewState> =
         MutableLiveData(RideDetailViewState.Empty)
-    val rideDetailViewState : LiveData<RideDetailViewState> = mutableRideDetailViewState
+    val rideDetailViewState: LiveData<RideDetailViewState> = mutableRideDetailViewState
 
 
-     fun setRideDetail(ride: RidesByDateUiModel){
+    fun setRideDetail(ride: RideUiModel) {
         mutableRideDetailViewState.postValue(RideDetailViewState.Loading)
-            mutableRideDetailViewState.postValue(RideDetailViewState.Success(ride = ride))
+        mutableRideDetailViewState.postValue(RideDetailViewState.Success(ride = ride.toRideDetailUiModel()))
     }
 
     fun retrieveMyRides() {
@@ -62,7 +64,7 @@ class RideListViewModel @Inject constructor(
         object Error : RideDetailViewState()
         object Loading : RideDetailViewState()
         data class Success(
-            val ride: RidesByDateUiModel
+            val ride: RideDetailUiModel
         ) : RideDetailViewState()
 
     }

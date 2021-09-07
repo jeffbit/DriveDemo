@@ -48,8 +48,7 @@ import com.example.hopskipdrivechallenge.feature.rideList.model.RidesByDateUiMod
 import com.example.hopskipdrivechallenge.feature.rideList.model.RidesUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRideDateUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRidesUiModel
-import com.example.hopskipdrivechallenge.feature.rideList.viewmodel.RideListViewModel
-import com.example.hopskipdrivechallenge.feature.ridedetail.model.RideDetaiUiModel
+import com.example.hopskipdrivechallenge.shared.viewmodel.RideListDetailViewModel
 import com.example.hopskipdrivechallenge.model.sampleRides
 
 
@@ -57,11 +56,11 @@ import com.example.hopskipdrivechallenge.model.sampleRides
 @ExperimentalFoundationApi
 @Composable
 fun MyRidesScreen(
-    rideListViewModel: RideListViewModel,
-    onRideClick: (RidesByDateUiModel) -> Unit,
+    rideListDetailViewModel: RideListDetailViewModel,
+    onRideClick: (RideUiModel) -> Unit,
 ) {
 
-    val viewState by rideListViewModel.rideListViewState.observeAsState()
+    val viewState by rideListDetailViewModel.rideListViewState.observeAsState()
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
@@ -83,7 +82,7 @@ fun MyRidesScreen(
     ) { padding ->
 
         MyRidesScreen(
-            viewState = viewState!!,
+            detailViewState = viewState!!,
             contentPadding = padding,
             onRideClick = onRideClick
         )
@@ -95,9 +94,9 @@ fun MyRidesScreen(
 @ExperimentalMaterialApi
 @Composable
 private fun MyRidesScreen(
-    viewState: RideListViewModel.RideListViewState,
+    detailViewState: RideListDetailViewModel.RideListViewState,
     contentPadding: PaddingValues,
-    onRideClick: (RidesByDateUiModel) -> Unit,
+    onRideClick: (RideUiModel) -> Unit,
     ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -111,19 +110,19 @@ private fun MyRidesScreen(
             bottom = contentPadding.calculateBottomPadding() + 16.dp
         ),
     ) {
-        when (viewState) {
-            RideListViewModel.RideListViewState.Empty -> {
+        when (detailViewState) {
+            RideListDetailViewModel.RideListViewState.Empty -> {
                 item {
 
                 }
             }
-            RideListViewModel.RideListViewState.Error -> {
+            RideListDetailViewModel.RideListViewState.Error -> {
                 item {
                     Text(text = "Error please try again")
                 }
 
             }
-            RideListViewModel.RideListViewState.Loading -> {
+            RideListDetailViewModel.RideListViewState.Loading -> {
                 item {
                     Row(
                         modifier = Modifier.fillParentMaxSize(),
@@ -135,9 +134,9 @@ private fun MyRidesScreen(
                 }
 
             }
-            is RideListViewModel.RideListViewState.Success -> {
+            is RideListDetailViewModel.RideListViewState.Success -> {
                 myRidesList(
-                    ridesUiModel = viewState.rides,
+                    ridesUiModel = detailViewState.rides,
                     onRideClick = onRideClick,
                     lazyListScope = this
                 )
@@ -152,7 +151,7 @@ private fun MyRidesScreen(
 @ExperimentalFoundationApi
 private fun myRidesList(
     ridesUiModel: RidesUiModel,
-    onRideClick: (RidesByDateUiModel) -> Unit,
+    onRideClick: (RideUiModel) -> Unit,
     lazyListScope: LazyListScope
 ) {
 
@@ -169,7 +168,7 @@ private fun myRidesList(
             }
             items(ride.rides) { rideModel ->
                 RideCard(rideUiModel = rideModel,
-                    onRideClick = { onRideClick(ride)})
+                    onRideClick = { onRideClick(rideModel)})
                 Spacer(modifier = Modifier.size(8.dp))
             }
         }
@@ -271,13 +270,13 @@ private fun RideCard(
                         }
                         withStyle(style = SpanStyle(fontStyle = body3.fontStyle)) {
                             if (passengers > 1) {
-                                append(" (${passengers} riders")
-                            } else append(" (${passengers} rider")
+                                append(" ($passengers riders")
+                            } else append(" ($passengers rider")
 
                             when (boosters) {
                                 0 -> append(")")
-                                1 -> append(" • ${boosters} booster)")
-                                else -> append(" • ${boosters} boosters)")
+                                1 -> append(" • $boosters booster)")
+                                else -> append(" • $boosters boosters)")
                             }
                         }
 
