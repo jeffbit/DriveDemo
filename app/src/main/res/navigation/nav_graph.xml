@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/rideListFragment">
+
+    <fragment
+        android:id="@+id/rideListFragment"
+        android:name="com.example.hopskipdrivechallenge.feature.rideList.ui.RideListFragment"
+        android:label="RideListFragment" >
+        <action
+            android:id="@+id/action_rideListFragment_to_rideDetailFragment"
+            app:destination="@id/rideDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/rideDetailFragment"
+        android:name="com.example.hopskipdrivechallenge.feature.ridedetail.ui.RideDetailFragment"
+        android:label="RideDetailFragment" >
+        <argument android:name="tripId"
+            app:argType="string" />
+    </fragment>
+</navigation>
