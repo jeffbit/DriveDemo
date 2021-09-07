@@ -58,7 +58,7 @@ fun RideEntity.toModel() = Ride(
 )
 
 fun List<OrderedWaypointEntity>.toOrderedWayPointList(): List<OrderedWaypoint> {
-    return this.map { it.toModel() } ?: emptyList()
+    return this.map { it.toModel() }
 
 }
 
@@ -83,9 +83,7 @@ fun LocationEntity.toModel() = Location(
 )
 
 
-//sample data for composable
-
-
+//sample data for use in composable Preview
 val sampleLocation = Location(
     address = "2565 E Underhill Ave, Anaheim 92806",
     lat = 34.17006916353578,

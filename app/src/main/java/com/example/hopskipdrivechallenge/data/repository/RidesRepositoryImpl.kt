@@ -20,7 +20,6 @@ class RidesRepositoryImpl(
                     Timber.d("return simplified rides: ${it.toModel()}")
                     it.toModel()
                 }
-
         }
     }
 

@@ -15,9 +15,5 @@
     <fragment
         android:id="@+id/rideDetailFragment"
         android:name="com.example.hopskipdrivechallenge.feature.ridedetail.ui.RideDetailFragment"
-        android:label="Ride Details">
-        <argument
-            android:name="tripId"
-            app:argType="string" />
-    </fragment>
+        android:label="Ride Details"/>
 </navigation>

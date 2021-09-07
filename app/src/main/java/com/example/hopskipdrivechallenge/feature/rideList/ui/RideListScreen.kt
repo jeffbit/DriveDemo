@@ -44,7 +44,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hopskipdrivechallenge.R
 import com.example.hopskipdrivechallenge.feature.rideList.model.RideUiModel
-import com.example.hopskipdrivechallenge.feature.rideList.model.RidesByDateUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.RidesUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRideDateUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRidesUiModel
@@ -59,7 +58,6 @@ fun MyRidesScreen(
     rideListDetailViewModel: RideListDetailViewModel,
     onRideClick: (RideUiModel) -> Unit,
 ) {
-
     val viewState by rideListDetailViewModel.rideListViewState.observeAsState()
     val scaffoldState = rememberScaffoldState()
     Scaffold(
@@ -80,7 +78,6 @@ fun MyRidesScreen(
             )
         }
     ) { padding ->
-
         MyRidesScreen(
             detailViewState = viewState!!,
             contentPadding = padding,
@@ -113,14 +110,13 @@ private fun MyRidesScreen(
         when (detailViewState) {
             RideListDetailViewModel.RideListViewState.Empty -> {
                 item {
-
+                        //todo: Empty State
                 }
             }
             RideListDetailViewModel.RideListViewState.Error -> {
                 item {
                     Text(text = "Error please try again")
                 }
-
             }
             RideListDetailViewModel.RideListViewState.Loading -> {
                 item {
@@ -132,7 +128,6 @@ private fun MyRidesScreen(
                         CircularProgressIndicator()
                     }
                 }
-
             }
             is RideListDetailViewModel.RideListViewState.Success -> {
                 myRidesList(
@@ -143,7 +138,6 @@ private fun MyRidesScreen(
             }
         }
     }
-
 }
 
 
@@ -154,7 +148,6 @@ private fun myRidesList(
     onRideClick: (RideUiModel) -> Unit,
     lazyListScope: LazyListScope
 ) {
-
     with(lazyListScope) {
         ridesUiModel.rides.forEach { ride ->
             stickyHeader {
@@ -245,7 +238,7 @@ private fun RideCard(
         onClick = { onRideClick( rideUiModel) }
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Row() {
+            Row {
                 Text(
                     buildAnnotatedString {
                         withStyle(
@@ -261,8 +254,8 @@ private fun RideCard(
                             append(rideUiModel.ends_at)
                             append(stringResource(R.string.space))
                         }
-                        var passengers = 0;
-                        var boosters = 0;
+                        var passengers = 0
+                        var boosters = 0
 
                         rideUiModel.ordered_waypoints.forEach {
                             passengers += it.passengers
@@ -279,7 +272,6 @@ private fun RideCard(
                                 else -> append(" • $boosters boosters)")
                             }
                         }
-
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -311,15 +303,13 @@ private fun RideCard(
 @Composable
 fun PreviewRideCard() {
     MaterialTheme {
-        Column() {
-            LazyColumn() {
+        Column {
+            LazyColumn {
                 myRidesList(
                     ridesUiModel = sampleRides.toRidesUiModel().toRideDateUiModel(),
                     onRideClick = {}, lazyListScope = this
                 )
             }
-
-
         }
     }
 }

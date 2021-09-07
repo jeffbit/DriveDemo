@@ -2,9 +2,6 @@ package com.example.hopskipdrivechallenge.feature.ridedetail.model
 
 import com.example.hopskipdrivechallenge.feature.rideList.model.OrderedWaypointUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.RideUiModel
-import com.example.hopskipdrivechallenge.feature.rideList.model.RidesByDateUiModel
-import com.example.hopskipdrivechallenge.model.OrderedWaypoint
-import java.text.DecimalFormat
 
 data class RideDetailUiModel(
     val tripId: String,
@@ -17,7 +14,6 @@ data class RideDetailUiModel(
     val inSeries: Boolean,
     val listOfLocations: List<RideDetailLocation>
 )
-
 
 data class RideDetailLocation(
     val anchor: Boolean,

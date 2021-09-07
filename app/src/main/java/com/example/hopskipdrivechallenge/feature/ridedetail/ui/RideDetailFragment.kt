@@ -1,12 +1,18 @@
 package com.example.hopskipdrivechallenge.feature.ridedetail.ui
 
-import android.opengl.Visibility
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
+import android.text.style.StyleSpan
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.graphics.Color
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -27,20 +33,9 @@ import dagger.hilt.android.AndroidEntryPoint
 class RideDetailFragment : Fragment() {
 
     private val detailViewModel: RideListDetailViewModel by activityViewModels<RideListDetailViewModel>()
-
-
     private lateinit var locationAdapter: LocationAdapter
     private var _binding: FragmentRideDetailBinding? = null
     private val binding get() = _binding!!
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-
-
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,44 +51,40 @@ class RideDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
 
-        locationAdapter = LocationAdapter(emptyList())
+        locationAdapter = LocationAdapter(emptyList(), view.context)
         binding.recyclerView.adapter = locationAdapter
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(this.requireContext())
         binding.recyclerView.adapter = locationAdapter
         navigateBack(binding.toolbar)
         loadData()
-
-
-    }
-
-
-    private fun loadData() {
-        detailViewModel.rideDetailViewState.observe(viewLifecycleOwner, { viewState ->
-            when (viewState) {
-                RideListDetailViewModel.RideDetailViewState.Empty -> {
-                    //todo
-                }
-                RideListDetailViewModel.RideDetailViewState.Error -> {
-                    //todo
-                }
-                RideListDetailViewModel.RideDetailViewState.Loading -> {
-                    //todo
-
-                }
-                is RideListDetailViewModel.RideDetailViewState.Success -> {
-                    successStateUi(viewState.ride)
-                }
-            }
-
-        })
-
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
+
+    private fun loadData() {
+        detailViewModel.rideDetailViewState.observe(viewLifecycleOwner, { viewState ->
+            when (viewState) {
+                RideListDetailViewModel.RideDetailViewState.Empty -> {
+                    //todo : empty State
+                }
+                RideListDetailViewModel.RideDetailViewState.Error -> {
+                    //todo : Error State
+                }
+                RideListDetailViewModel.RideDetailViewState.Loading -> {
+                    //todo Loading State
+
+                }
+                is RideListDetailViewModel.RideDetailViewState.Success -> {
+                    successStateUi(viewState.ride)
+                }
+            }
+        })
+    }
+
 
     private fun successStateUi(rides: RideDetailUiModel) {
         when (rides.inSeries) {
@@ -104,13 +95,20 @@ class RideDetailFragment : Fragment() {
             false -> {
                 binding.seriesTV.isInvisible = true
                 binding.seriesTV.isVisible = false
-
             }
         }
-        binding.date.text = "${rides.date} • ${rides.startsAt} - ${rides.endsAt}"
-        binding.tripIdTv.text =
-            "Trip ID: ${rides.tripId} • ${rides.totalMiles} mi • ${rides.totalTimeInMin} min"
+        val dateSpan = SpannableString("${rides.date} • ${rides.startsAt} - ${rides.endsAt}")
+        dateSpan.setSpan(ForegroundColorSpan(Color.Blue.hashCode()), 0, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        dateSpan.setSpan(StyleSpan(Typeface.BOLD), 0, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        dateSpan.setSpan(RelativeSizeSpan(2f), 0, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        dateSpan.setSpan(StyleSpan(Typeface.BOLD), 10, 18, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        binding.date.text = dateSpan
+
+
+        val tripSpan = "Trip ID: ${rides.tripId} • ${rides.totalMiles} mi • ${rides.totalTimeInMin} min"
         binding.estimatedCost.text = "$${rides.estimatedCost}"
+        binding.tripIdTv.text = tripSpan
+
         locationAdapter.updateList(rides.listOfLocations)
         val mapFrag = childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFrag.getMapAsync { googleMap ->
@@ -126,12 +124,10 @@ class RideDetailFragment : Fragment() {
     }
 
 
-
     private fun navigateBack(toolbar: androidx.appcompat.widget.Toolbar) {
         toolbar.setNavigationOnClickListener {
             activity?.onBackPressed()
         }
     }
-
 
 }

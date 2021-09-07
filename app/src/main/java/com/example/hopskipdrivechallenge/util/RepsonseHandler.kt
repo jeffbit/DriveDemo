@@ -6,7 +6,7 @@ import java.lang.Exception
 
 //todo: future update: add fun to check network connection.
 
-class ResponseHandler() {
+class ResponseHandler {
 
     fun <T> process(response: Response<T>): Result<T> {
         return try {

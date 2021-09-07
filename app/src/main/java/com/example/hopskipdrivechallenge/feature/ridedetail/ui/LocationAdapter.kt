@@ -1,5 +1,6 @@
 package com.example.hopskipdrivechallenge.feature.ridedetail.ui
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,11 +9,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hopskipdrivechallenge.R
-import com.example.hopskipdrivechallenge.feature.rideList.model.OrderedWaypointUiModel
-import com.example.hopskipdrivechallenge.feature.rideList.model.RidesByDateUiModel
 import com.example.hopskipdrivechallenge.feature.ridedetail.model.RideDetailLocation
 
-class LocationAdapter(private var list: List<RideDetailLocation>) :
+class LocationAdapter(private var list: List<RideDetailLocation>,
+private val context: Context) :
     RecyclerView.Adapter<LocationAdapter.LocationViewHolder>() {
 
     fun updateList(newList: List<RideDetailLocation>) {
@@ -23,28 +23,25 @@ class LocationAdapter(private var list: List<RideDetailLocation>) :
         diffResult.dispatchUpdatesTo(this)
     }
 
-
     inner class LocationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private var iconImage = view.findViewById<ImageView>(R.id.iconIv)
         private var pickUpOrDropOff = view.findViewById<TextView>(R.id.pickupTv)
         private var location = view.findViewById<TextView>(R.id.locationTv)
 
-
         fun bind(rideDetailLocation: RideDetailLocation) {
             location.text = rideDetailLocation.address
             when (rideDetailLocation.anchor) {
                 true -> {
-                    iconImage.setImageResource(R.drawable.ic_baseline_star_24)
+                    iconImage.setImageResource(R.drawable.diamond)
                 }
                 false -> {
-                    iconImage.setImageResource(R.drawable.ic_baseline_check_circle_24)
+                    iconImage.setImageResource(R.drawable.circle)
                 }
             }
             if (rideDetailLocation == list.last()) {
-                pickUpOrDropOff.text = "Drop-off"
+                pickUpOrDropOff.text = context.getString(R.string.drop_off)
             }
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationViewHolder {
@@ -63,7 +60,6 @@ class LocationAdapter(private var list: List<RideDetailLocation>) :
         return list.size
     }
 }
-
 
 class LocationDiffCallBack(
     private var oldList: List<RideDetailLocation>,

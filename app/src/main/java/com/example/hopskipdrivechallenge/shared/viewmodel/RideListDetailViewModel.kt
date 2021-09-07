@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hopskipdrivechallenge.data.repository.RidesRepository
 import com.example.hopskipdrivechallenge.feature.rideList.model.RideUiModel
-import com.example.hopskipdrivechallenge.feature.rideList.model.RidesByDateUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.RidesUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRideDateUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRidesUiModel
@@ -58,7 +57,7 @@ class RideListDetailViewModel @Inject constructor(
         }
     }
 
-
+    //RideDetailFragment ViewState
     sealed class RideDetailViewState {
         object Empty : RideDetailViewState()
         object Error : RideDetailViewState()
@@ -66,10 +65,9 @@ class RideListDetailViewModel @Inject constructor(
         data class Success(
             val ride: RideDetailUiModel
         ) : RideDetailViewState()
-
     }
 
-
+    //RideListScreen ViewState
     sealed class RideListViewState {
         object Empty : RideListViewState()
         object Error : RideListViewState()
@@ -77,6 +75,5 @@ class RideListDetailViewModel @Inject constructor(
         data class Success(
             val rides: RidesUiModel
         ) : RideListViewState()
-
     }
 }

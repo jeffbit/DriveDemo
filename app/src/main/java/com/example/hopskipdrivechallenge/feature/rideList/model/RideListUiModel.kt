@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -21,7 +20,6 @@ import java.util.Locale
 data class RidesUiModel(
     val rides: List<RidesByDateUiModel>
 )
-
 
 data class RidesByDateUiModel(
     val date: String,
@@ -45,7 +43,6 @@ data class RideUiModel(
 
 
 fun toRidesUiModel(ridesUiModel: List<RideUiModel>): RidesUiModel {
-
     val rides = mutableListOf<RidesByDateUiModel>()
     val groupedByDate = ridesUiModel.groupBy { it.dateOfRide }
 
@@ -60,14 +57,11 @@ fun toRidesUiModel(ridesUiModel: List<RideUiModel>): RidesUiModel {
             )
         )
     }
-
     return RidesUiModel(rides = rides)
-
 }
 
 fun List<RideUiModel>.toRideDateUiModel(): RidesUiModel {
     return toRidesUiModel(this)
-
 }
 
 fun Rides.toRidesUiModel(): List<RideUiModel> {
@@ -135,7 +129,6 @@ private fun countBoosterSeats(passengers: List<Passenger>): Int {
     var boosterCount = 0
     passengers.forEach {
         if (it.booster_seat) boosterCount++
-
     }
     return boosterCount
 }

@@ -20,7 +20,6 @@ class RideListFragment : Fragment() {
 
     private val detailViewModel: RideListDetailViewModel by activityViewModels<RideListDetailViewModel>()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         detailViewModel.retrieveMyRides()
@@ -31,7 +30,7 @@ class RideListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme {
@@ -39,15 +38,15 @@ class RideListFragment : Fragment() {
                         rideListDetailViewModel = detailViewModel,
                         onRideClick = { ride ->
                             detailViewModel.setRideDetail(ride = ride)
-                            passDataToRideDetail("")
+                            navigateToRideDetail()
                         })
                 }
             }
         }
     }
 
-    private fun passDataToRideDetail(tripId: String) {
-        val action = RideListFragmentDirections.actionRideListFragmentToRideDetailFragment(tripId)
+    private fun navigateToRideDetail() {
+        val action = RideListFragmentDirections.actionRideListFragmentToRideDetailFragment()
         findNavController().navigate(action)
     }
 

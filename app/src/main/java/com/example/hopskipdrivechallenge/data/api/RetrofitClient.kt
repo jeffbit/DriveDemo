@@ -30,9 +30,6 @@ object RetrofitClient {
             }
         }.build()
 
-
-
-
     private fun retrofit(): Retrofit =
         Retrofit.Builder()
             .baseUrl(BASE_URL)

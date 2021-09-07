@@ -25,11 +25,6 @@ import androidx.compose.ui.unit.sp
     fontSize = 18.sp,
     fontWeight = FontWeight.Normal,
 )
- val bodyBold = TextStyle(
-    color = Color.Black,
-    fontSize = 16.sp,
-    fontWeight = FontWeight.Bold,
-)
  val caption = TextStyle(
     color = Color.Black,
     fontSize = 12.sp,
