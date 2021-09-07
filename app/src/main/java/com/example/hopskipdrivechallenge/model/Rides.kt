@@ -32,7 +32,7 @@ data class OrderedWaypoint(
     val anchor: Boolean,
     val id: Int,
     val locationEntity: Location,
-    val passengers: List<Passenger>
+    val passengers: List<Passenger>,
 )
 
 data class Location(

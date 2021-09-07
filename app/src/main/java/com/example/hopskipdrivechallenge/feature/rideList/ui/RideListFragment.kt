@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -23,15 +24,12 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class RideListFragment : Fragment() {
 
-    private val viewModel: RideListViewModel by viewModels()
+    private val viewModel: RideListViewModel by activityViewModels<RideListViewModel>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Handler().postDelayed({
-            viewModel.retrieveMyRides()
-        }, 5000)
-
-
+        viewModel.retrieveMyRides()
     }
 
     @ExperimentalFoundationApi
@@ -45,8 +43,9 @@ class RideListFragment : Fragment() {
                 MaterialTheme {
                     MyRidesScreen(
                         rideListViewModel = viewModel,
-                        onRideClick = { tripId ->
-                            passDataToRideDetail(tripId = tripId)
+                        onRideClick = { ride ->
+                            viewModel.setRideDetail(ride = ride)
+                            passDataToRideDetail("")
                         })
                 }
             }
@@ -54,8 +53,8 @@ class RideListFragment : Fragment() {
     }
 
     private fun passDataToRideDetail(tripId: String) {
-//        val action = RideListFragmentDirections.actionRideListFragmentToRideDetailFragment(tripId)
-//        findNavController().navigate(action)
+        val action = RideListFragmentDirections.actionRideListFragmentToRideDetailFragment(tripId)
+        findNavController().navigate(action)
     }
 
 }

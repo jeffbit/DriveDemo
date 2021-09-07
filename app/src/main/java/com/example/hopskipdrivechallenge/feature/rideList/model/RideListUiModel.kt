@@ -8,6 +8,7 @@ import com.example.hopskipdrivechallenge.model.OrderedWaypoint
 import com.example.hopskipdrivechallenge.model.Passenger
 import com.example.hopskipdrivechallenge.model.Ride
 import com.example.hopskipdrivechallenge.model.Rides
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -34,9 +35,10 @@ data class RideUiModel(
     val dateOfRide: String,
     val starts_at: String,
     val ends_at: String,
-    val estimated_earnings_cents: Double,
+    val estimated_earnings_cents: String,
     val ordered_waypoints: List<OrderedWaypointUiModel>,
-    val trip_id: String
+    val trip_id: String,
+    val inSeries: Boolean
 )
 
 
@@ -61,7 +63,7 @@ fun toRidesUiModel(ridesUiModel: List<RideUiModel>): RidesUiModel {
 
 }
 
-fun List<RideUiModel>.toRideDateUiModel(): RidesUiModel{
+fun List<RideUiModel>.toRideDateUiModel(): RidesUiModel {
     return toRidesUiModel(this)
 
 }
@@ -75,12 +77,12 @@ fun Rides.toRidesUiModel(): List<RideUiModel> {
 }
 
 
-fun addEstimatedEarnings(rides: List<RideUiModel>): String {
+private fun addEstimatedEarnings(rides: List<RideUiModel>): String {
     var total = 0.0
     rides.forEach {
-        total += it.estimated_earnings_cents
+        total += it.estimated_earnings_cents.toDouble()
     }
-    return total.toString()
+    return DecimalFormat("#.00").format(total)
 }
 
 
@@ -88,31 +90,38 @@ data class OrderedWaypointUiModel(
     val id: String,
     val location: LocationUiModel,
     val passengers: Int,
-    val booster_seats: Int
+    val booster_seats: Int,
+    val anchor: Boolean
 )
 
 data class LocationUiModel(
     val address: String
 )
 
-fun Ride.toRideUiModel() = RideUiModel(
+private fun Ride.toRideUiModel() = RideUiModel(
     dateOfRide = dateTimeToLocalDate(starts_at),
     starts_at = dateTimeToLocalTime(starts_at),
     ends_at = dateTimeToLocalTime(ends_at),
-    estimated_earnings_cents = (estimated_earnings_cents.toDouble() * 1 / (100)),
+    estimated_earnings_cents = formatEarnings(estimated_earnings_cents.toDouble()),
     ordered_waypoints = ordered_waypoints.map { it.toOrderedWayPointUiModel() },
-    trip_id = trip_id.toString()
+    trip_id = trip_id.toString(),
+    inSeries = in_series
 )
 
-fun OrderedWaypoint.toOrderedWayPointUiModel() = OrderedWaypointUiModel(
+private fun formatEarnings(earnings: Double): String {
+    return DecimalFormat("#.00").format(earnings * 1 / 100)
+}
+
+private fun OrderedWaypoint.toOrderedWayPointUiModel() = OrderedWaypointUiModel(
     id = id.toString(),
     location = locationEntity.toLocationUiModel(),
     passengers = passengers.size,
-    booster_seats = countBoosterSeats(passengers = passengers)
+    booster_seats = countBoosterSeats(passengers = passengers),
+    anchor = anchor
 )
 
 
-fun countBoosterSeats(passengers: List<Passenger>): Int {
+private fun countBoosterSeats(passengers: List<Passenger>): Int {
     var boosterCount = 0
     passengers.forEach {
         if (it.booster_seat) boosterCount++
@@ -121,15 +130,15 @@ fun countBoosterSeats(passengers: List<Passenger>): Int {
     return boosterCount
 }
 
-fun Location.toLocationUiModel() = LocationUiModel(
+private fun Location.toLocationUiModel() = LocationUiModel(
     address = address
 )
 
 
 @SuppressLint("SimpleDateFormat")
-fun dateTimeToLocalTime(dateTime: String): String {
+private fun dateTimeToLocalTime(dateTime: String): String {
     val instant = Instant.parse(dateTime)
-    val result = LocalDateTime.ofInstant(instant, ZoneId.of(ZoneOffset.UTC.id)).toLocalTime()
+    val result = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalTime()
     val sdf = SimpleDateFormat("H:mm")
     val dateObj = sdf.parse("${result.hour}:${result.minute}")
     return SimpleDateFormat("K:mm a").format(dateObj)
@@ -137,9 +146,9 @@ fun dateTimeToLocalTime(dateTime: String): String {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun dateTimeToLocalDate(dateTime: String): String {
+private fun dateTimeToLocalDate(dateTime: String): String {
     val instant = Instant.parse(dateTime)
-    val result = LocalDateTime.ofInstant(instant, ZoneId.of(ZoneOffset.UTC.id))
+    val result = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
     val date = result.toLocalDate()
     return "${
         date.dayOfWeek.getDisplayName(

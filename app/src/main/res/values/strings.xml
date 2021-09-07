@@ -3,9 +3,16 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="estimate">ESTIMATED</string>
-    <string name="dash">-</string>
+    <string name="dash"> - </string>
     <string name="my_rides">My Rides</string>
     <string name="space">   </string>
     <string name="no_riders">(X rider)</string>
     <string name="estimate_short">est.</string>
+    <string name="this_trip_is_part_of_a_series">This trip is part of a series.</string>
+    <string name="thu_6_17_3_36p_4_26pm">Thu 6/17 - 3:36p - 4:26pm</string>
+    <string name="estimated">ESTIMATED</string>
+    <string name="_30_45">$30.45</string>
+    <string name="cancel_trip">Cancel Trip</string>
+    <string name="textview">TextView</string>
+    <string name="drop_off">Drop-off</string>
 </resources>

@@ -1,14 +1,15 @@
 package com.example.hopskipdrivechallenge.feature.rideList.viewmodel
 
+import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hopskipdrivechallenge.data.repository.RidesRepository
+import com.example.hopskipdrivechallenge.feature.rideList.model.RidesByDateUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.RidesUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRideDateUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRidesUiModel
-import com.example.hopskipdrivechallenge.model.Ride
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -20,17 +21,27 @@ class RideListViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    private val mutableViewState: MutableLiveData<RideListViewState> =
+    private val mutableRideListViewState: MutableLiveData<RideListViewState> =
         MutableLiveData(RideListViewState.Empty)
-    val viewState: LiveData<RideListViewState> = mutableViewState
+    val rideListViewState: LiveData<RideListViewState> = mutableRideListViewState
 
+
+    private val mutableRideDetailViewState : MutableLiveData<RideDetailViewState> =
+        MutableLiveData(RideDetailViewState.Empty)
+    val rideDetailViewState : LiveData<RideDetailViewState> = mutableRideDetailViewState
+
+
+     fun setRideDetail(ride: RidesByDateUiModel){
+        mutableRideDetailViewState.postValue(RideDetailViewState.Loading)
+            mutableRideDetailViewState.postValue(RideDetailViewState.Success(ride = ride))
+    }
 
     fun retrieveMyRides() {
-        mutableViewState.postValue(RideListViewState.Loading)
+        mutableRideListViewState.postValue(RideListViewState.Loading)
         viewModelScope.launch {
             ridesRepository.returnSimplifiedRides()
                 .onSuccess {
-                    mutableViewState.postValue(
+                    mutableRideListViewState.postValue(
                         RideListViewState.Success(
                             it.toRidesUiModel().toRideDateUiModel()
                         )
@@ -38,11 +49,22 @@ class RideListViewModel @Inject constructor(
                     Timber.d("Rides: ${it.toRidesUiModel()}")
                 }
                 .onFailure {
-                    mutableViewState.postValue(RideListViewState.Error)
+                    mutableRideListViewState.postValue(RideListViewState.Error)
                     Timber.d("Failure ${it.localizedMessage}")
                 }
 
         }
+    }
+
+
+    sealed class RideDetailViewState {
+        object Empty : RideDetailViewState()
+        object Error : RideDetailViewState()
+        object Loading : RideDetailViewState()
+        data class Success(
+            val ride: RidesByDateUiModel
+        ) : RideDetailViewState()
+
     }
 
 

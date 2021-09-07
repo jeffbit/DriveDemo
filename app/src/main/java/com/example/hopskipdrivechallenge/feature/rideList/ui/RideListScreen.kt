@@ -42,16 +42,15 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hopskipdrivechallenge.R
 import com.example.hopskipdrivechallenge.feature.rideList.model.RideUiModel
+import com.example.hopskipdrivechallenge.feature.rideList.model.RidesByDateUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.RidesUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRideDateUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.model.toRidesUiModel
 import com.example.hopskipdrivechallenge.feature.rideList.viewmodel.RideListViewModel
+import com.example.hopskipdrivechallenge.feature.ridedetail.model.RideDetaiUiModel
 import com.example.hopskipdrivechallenge.model.sampleRides
-import java.util.logging.Handler
 
 
 @ExperimentalMaterialApi
@@ -59,10 +58,10 @@ import java.util.logging.Handler
 @Composable
 fun MyRidesScreen(
     rideListViewModel: RideListViewModel,
-    onRideClick: (tripId: String) -> Unit,
+    onRideClick: (RidesByDateUiModel) -> Unit,
 ) {
 
-    val viewState by rideListViewModel.viewState.observeAsState()
+    val viewState by rideListViewModel.rideListViewState.observeAsState()
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
@@ -83,7 +82,6 @@ fun MyRidesScreen(
         }
     ) { padding ->
 
-
         MyRidesScreen(
             viewState = viewState!!,
             contentPadding = padding,
@@ -99,8 +97,7 @@ fun MyRidesScreen(
 private fun MyRidesScreen(
     viewState: RideListViewModel.RideListViewState,
     contentPadding: PaddingValues,
-    onRideClick: (tripId: String) -> Unit,
-
+    onRideClick: (RidesByDateUiModel) -> Unit,
     ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -155,7 +152,7 @@ private fun MyRidesScreen(
 @ExperimentalFoundationApi
 private fun myRidesList(
     ridesUiModel: RidesUiModel,
-    onRideClick: (String) -> Unit,
+    onRideClick: (RidesByDateUiModel) -> Unit,
     lazyListScope: LazyListScope
 ) {
 
@@ -172,7 +169,7 @@ private fun myRidesList(
             }
             items(ride.rides) { rideModel ->
                 RideCard(rideUiModel = rideModel,
-                    onRideClick = { onRideClick(rideModel.trip_id) })
+                    onRideClick = { onRideClick(ride)})
                 Spacer(modifier = Modifier.size(8.dp))
             }
         }
@@ -212,7 +209,7 @@ private fun RideListHeader(
                         ) {
                             append(startsAt)
                         }
-                        append(stringResource(R.string.dash))
+                        append(" - ")
                         withStyle(style = SpanStyle(fontStyle = body1.fontStyle)) {
                             append(endsAt)
                         }
@@ -241,12 +238,12 @@ private fun RideListHeader(
 @Composable
 private fun RideCard(
     rideUiModel: RideUiModel,
-    onRideClick: (String) -> Unit
+    onRideClick: (RideUiModel) -> Unit
 ) {
     Card(
         elevation = 2.dp,
         modifier = Modifier.padding(8.dp),
-        onClick = { onRideClick(rideUiModel.trip_id) }
+        onClick = { onRideClick( rideUiModel) }
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row() {
@@ -260,24 +257,30 @@ private fun RideCard(
                         ) {
                             append(rideUiModel.starts_at)
                         }
-                        append(stringResource(R.string.dash))
+                        append(" - ")
                         withStyle(style = SpanStyle(fontStyle = h2.fontStyle)) {
                             append(rideUiModel.ends_at)
                             append(stringResource(R.string.space))
                         }
+                        var passengers = 0;
+                        var boosters = 0;
+
+                        rideUiModel.ordered_waypoints.forEach {
+                            passengers += it.passengers
+                            boosters += it.booster_seats
+                        }
                         withStyle(style = SpanStyle(fontStyle = body3.fontStyle)) {
-                            rideUiModel.ordered_waypoints.forEach {
-                                when (it.passengers) {
-                                    0, 1 -> append("(${it.passengers} rider")
-                                    else -> append("(${it.passengers} riders • ")
-                                }
-                                when (it.booster_seats) {
-                                    0 -> append(")")
-                                    1 -> append("${it.booster_seats} booster)")
-                                    else -> append("${it.booster_seats} boosters)")
-                                }
+                            if (passengers > 1) {
+                                append(" (${passengers} riders")
+                            } else append(" (${passengers} rider")
+
+                            when (boosters) {
+                                0 -> append(")")
+                                1 -> append(" • ${boosters} booster)")
+                                else -> append(" • ${boosters} boosters)")
                             }
                         }
+
                     },
                     modifier = Modifier.weight(1f)
                 )
